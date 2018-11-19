@@ -44,6 +44,11 @@ contract HashMarket {
         // the ID of the item
         return _items.length-1;
     }
+    function getItem(uint itemID) public view onlyIfItemExists(itemID)
+    returns (bytes32, uint, address, uint) {
 
+        Item storage item = _items[itemID];
+        return (item.name, item.price, item.seller, uint(item.status));
+    }
     
 }
