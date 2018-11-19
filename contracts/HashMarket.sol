@@ -45,47 +45,5 @@ contract HashMarket {
         return _items.length-1;
     }
 
-    function getItem(uint itemID) public view onlyIfItemExists(itemID)
-    returns (bytes32, uint, address, uint) {
-
-        Item storage item = _items[itemID];
-        return (item.name, item.price, item.seller, uint(item.status));
-    }
-
-    function buyItem(uint itemID) public payable onlyIfItemExists(itemID) {
-
-        Item storage currentItem = _items[itemID];
-
-        require(currentItem.status == ItemStatus.active);
-        require(currentItem.price == msg.value);
-
-        _pendingWithdrawals[currentItem.seller] = msg.value;
-        currentItem.status = ItemStatus.sold;
-
-        emit ItemPurchased(itemID, msg.sender, currentItem.seller);
-    }
-
-    function removeItem(uint itemID) public onlyIfItemExists(itemID) {
-        Item storage currentItem = _items[itemID];
-
-        require(currentItem.seller == msg.sender);
-        require(currentItem.status == ItemStatus.active);
-
-        currentItem.status = ItemStatus.removed;
-
-        emit ItemRemoved(itemID);
-    }
-
-    function pullFunds() public returns (bool) {
-        require(_pendingWithdrawals[msg.sender] > 0);
-
-        uint outstandingFundsAmount = _pendingWithdrawals[msg.sender];
-
-        if (msg.sender.send(outstandingFundsAmount)) {
-            emit FundsPulled(msg.sender, outstandingFundsAmount);
-            return true;
-        } else {
-            return false;
-        }
-    }
+    
 }
